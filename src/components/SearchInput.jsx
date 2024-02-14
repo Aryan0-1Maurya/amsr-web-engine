@@ -4,7 +4,6 @@ import { IoMdClose } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 
 import MicIcon from "../assets/mic.svg";
-import ImageIcon from "../assets/image.svg";
 
 const SearchInput = () => {
     const { query } = useParams();
@@ -16,6 +15,24 @@ const SearchInput = () => {
             navigate(`/${searchQuery}/${1}`);
         }
     };
+
+    const handleVoiceSearch = () => {
+        const recognition = new window.webkitSpeechRecognition();
+        recognition.lang = "en-US";
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setSearchQuery(transcript);
+            navigate(`/${transcript}/1`);
+        };
+
+        recognition.onerror = (event) => {
+            console.error("Speech recognition error:", event.error);
+        };
+
+        recognition.start();
+    };
+
     return (
         <div
             id="searchBox"
@@ -39,12 +56,8 @@ const SearchInput = () => {
                         onClick={() => setSearchQuery("")}
                     />
                 )}
-                <img className="h-6 w-6 cursor-pointer" src={MicIcon} alt="" />
-                <img
-                    className="h-6 w-6 cursor-pointer"
-                    src={ImageIcon}
-                    alt=""
-                />
+                <img className="h-6 w-6 cursor-pointer"  onClick={handleVoiceSearch} src={MicIcon} alt="" />
+                
             </div>
         </div>
     );
